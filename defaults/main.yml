@@ -1,0 +1,85 @@
+---
+unbound_access_control:
+  - 10.0.0.0/8 allow
+  - 172.16.0.0/12 allow
+  - 192.168.0.0/16 allow
+  - fd00::/8 allow
+  - fe80::/10 allow
+unbound_access_control_tag: []
+unbound_access_control_tag_action: []
+unbound_access_control_tag_data: []
+unbound_cache_max_negative_ttl: 3600    # 1 Hour
+unbound_cache_max_ttl: 86400    # 1 Day
+unbound_cache_min_ttl: 0
+unbound_data_dir: "/opt/{{ unbound_name }}"
+unbound_disable_dnssec_lame_check: false
+unbound_domains_insecure: []
+unbound_gid: 891
+unbound_group: unbound
+unbound_harden_algo_downgrade: false
+unbound_harden_below_nxdomain: true
+unbound_harden_referral_path: true
+unbound_hide_identity: true
+unbound_hide_version: true
+unbound_image: mvance/unbound
+# unbound_identity
+unbound_include_post: []
+unbound_include_pre: []
+unbound_infra_cache_numhosts: 10000
+unbound_infra_cache_slabs: 4
+unbound_infra_host_ttl: 900
+unbound_infra_cache_min_rtt: 50
+unbound_key_cache_slabs: 4
+unbound_lan_zones_insecure: false
+unbound_lan_zones_unblock: false
+unbound_local_zones: []
+unbound_local_datas: []
+unbound_local_data_ptrs: []
+unbound_local_zone_tags: []
+unbound_local_zone_overrides: []
+unbound_log_replies: true
+unbound_log_queries: true
+unbound_name: "unbound_{{ ansible_hostname }}"
+unbound_ports_expose: true
+unbound_prefetch: false
+unbound_prefetch_key: true
+unbound_private_addresses:
+  - 10.0.0.0/8
+  - 172.16.0.0/12
+  - 192.168.0.0/16
+  - fd00::/8
+  - fe80::/10
+unbound_private_domains: []
+# unbound_root_hints
+unbound_serve_expired: true
+unbound_serve_expired_client_timeout: 1800    # RFC 8767
+unbound_serve_expired_ttl: 86400    # RFC 8767
+unbound_serve_expired_reply_ttl: 30
+unbound_serve_expired_ttl_reset: false
+# unbound_statistics_interval
+# unbound_statistics_cumulative
+# unbound_statistics_extended
+unbound_threads: 1
+# unbound_tls_cert_bundle
+# unbound_tls_key
+# unbound_tls_pem
+# unbound_trust_anchor_file
+unbound_trust_anchor_file_auto: /var/lib/unbound/root.key
+unbound_trust_anchors: []
+unbound_trusted_keys_files: []
+unbound_uid: 891
+unbound_use_caps_for_id: false
+unbound_user: unbound
+unbound_version: 1.17.1
+unbound_verbosity: 5    # 1
+unbound_verbosity_validator: 5    # 2
+unbound_views: []
+unbound_zones_stub: []
+unbound_zones_forward:
+  - name: "."
+    forward-tls-upstream: "yes"
+    forward-addr:
+      - 1.1.1.1@853
+      - 1.0.0.1@853
+      - 2606:4700:4700::1111@853
+      - 2606:4700:4700::1001@853

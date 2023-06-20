@@ -1,0 +1,174 @@
+# {{ ansible_managed }}
+
+{% for include in unbound_include_pre %}
+include: conf.d/{{ include }}
+
+{% endfor %}
+server:
+  verbosity: {{ unbound_verbosity }}
+  val-log-level: {{ unbound_verbosity_validator }}
+  directory: /opt/unbound/etc/unbound
+  log-time-ascii: "yes"
+{% if unbound_log_identity is defined %}
+  log-identity: {{ unbound_name }}
+{% endif %}
+{% if unbound_log_queries is defined %}
+  log-queries: "{{ 'yes' if unbound_log_queries else 'no' }}"
+{% endif %}
+{% if unbound_log_replies is defined %}
+  log-replies: "{{ 'yes' if unbound_log_replies else 'no' }}"
+{% endif %}
+  do-daemonize: "no"
+  use-syslog: "no"
+{% if unbound_statistics_interval is defined %}
+  statistics-interval: {{ unbound_statistics_interval }}
+{% endif %}
+{% if unbound_statistics_cumulative is defined %}
+  statistics-cumulative: {{ unbound_statistics_cumulative }}
+{% endif %}
+{% if unbound_statistics_extended is defined %}
+  extended-statistics: {{ unbound_statistics_extended }}
+{% endif %}
+  hide-identity: "{{ 'yes' if unbound_hide_identity else 'no' }}"
+{% if unbound_identity is defined %}
+  identity: {{ unbound_identity }}
+{% endif %}
+{% if unbound_hide_version is defined %}
+  hide-version: "{{ 'yes' if unbound_hide_version else 'no' }}"
+{% endif %}
+  version: {{ unbound_version }}
+  num-threads: {{ unbound_threads }}
+  interface-automatic: "yes"
+  do-ip4: "{{ 'yes' if ansible_default_ipv4.address is defined else 'no' }}"
+  do-ip6: "{{ 'yes' if ansible_default_ipv6.address is defined else 'no' }}"
+  do-udp: "yes"
+  do-tcp: "yes"
+  disable-dnssec-lame-check: "{{ 'yes' if unbound_disable_dnssec_lame_check else 'no' }}"
+  harden-below-nxdomain: "{{ 'yes' if unbound_harden_below_nxdomain else 'no' }}"
+  harden-referral-path: "{{ 'yes' if unbound_harden_referral_path else 'no' }}"
+  harden-algo-downgrade: "{{ 'yes' if unbound_harden_algo_downgrade else 'no' }}"
+  use-caps-for-id: "{{ 'yes' if unbound_use_caps_for_id else 'no' }}"
+  hide-identity: "{{ 'yes' if unbound_hide_identity else 'no' }}"
+{% if unbound_tls_cert_bundle is defined %}
+  tls-cert-bundle: {{ unbound_tls_cert_bundle }}
+{% endif %}
+{% if unbound_tls_key is defined %}
+  tls-service-key: {{ unbound_tls_key }}
+{% endif %}
+{% if unbound_tls_pem is defined %}
+  tls-service-pem: {{ unbound_tls_pem }}
+{% endif %}
+{% if unbound_tls_key is defined %}
+  tls-port: 853
+{% endif %}
+  cache-max-ttl: {{ unbound_cache_max_ttl }}
+  cache-min-ttl: {{ unbound_cache_min_ttl }}
+  cache-max-negative-ttl: {{ unbound_cache_max_negative_ttl }}
+  key-cache-slabs: {{ unbound_key_cache_slabs }}
+  infra-host-ttl: {{ unbound_infra_host_ttl }}
+  infra-cache-slabs: {{ unbound_infra_cache_slabs }}
+  infra-cache-numhosts: {{ unbound_infra_cache_numhosts }}
+  infra-cache-min-rtt: {{ unbound_infra_cache_min_rtt }}
+  prefetch: "{{ 'yes' if unbound_prefetch else 'no' }}"
+  prefetch-key: "{{ 'yes' if unbound_prefetch_key else 'no' }}"
+  serve-expired: "{{ 'yes' if unbound_serve_expired else 'no' }}"
+  serve-expired-ttl: {{ unbound_serve_expired_ttl }}
+  serve-expired-ttl-reset: "{{ 'yes' if unbound_serve_expired_ttl_reset else 'no' }}"
+  serve-expired-reply-ttl: {{ unbound_serve_expired_reply_ttl }}
+  serve-expired-client-timeout: {{ unbound_serve_expired_client_timeout }}
+{% for acl in unbound_access_control %}
+  access-control: {{ acl }}
+{% endfor %}
+{% for acl in unbound_access_control_tag %}
+  access-control-tag: {{ acl }}
+{% endfor %}
+{% for acl in unbound_access_control_tag_action %}
+  access-control-tag-action: {{ acl }}
+{% endfor %}
+{% for acl in unbound_access_control_tag_data %}
+  access-control-tag-data: {{ acl }}
+{% endfor %}
+{% if unbound_root_hints is defined %}
+  root-hints: {{ unbound_root_hints }}
+{% endif %}
+{% for private_addr in unbound_private_addresses %}
+  private-address: {{ private_addr }}
+{% endfor %}
+{% for private_domain in unbound_private_domains %}
+  private-domain: {{ private_domain }}
+{% endfor %}
+{% for domain in unbound_domains_insecure %}
+  domain-insecure: {{ domain }}
+{% endfor %}
+  unblock-lan-zones: "{{ 'yes' if unbound_lan_zones_unblock else 'no' }}"
+  insecure-lan-zones: "{{ 'yes' if unbound_lan_zones_insecure else 'no' }}"
+{% for zone in unbound_local_zones %}
+  local-zone: {{ zone }}
+{% endfor %}
+{% for data in unbound_local_datas %}
+  local-data: {{ data }}
+{% endfor %}
+{% for ptr in unbound_local_data_ptrs %}
+  local-data-ptr: {{ ptr }}
+{% endfor %}
+{% for zone in unbound_local_zone_tags %}
+  local-zone-tag: {{ zone }}
+{% endfor %}
+{% for override in unbound_local_zone_overrides %}
+  local-zone-override: {{ override }}
+{% endfor %}
+{% if unbound_trust_anchor_file is defined %}
+  trust-anchor-file: {{ unbound_trust_anchor_file }}
+{% endif %}
+{% if unbound_auto_trust_anchor_file is defined %}
+  auto-trust-anchor-file: {{ unbound_trust_anchor_file_auto }}
+{% endif %}
+{% for record in unbound_trust_anchors %}
+  trust-anchor: {{ record }}
+{% endfor %}
+{% for file in unbound_trusted_keys_files %}
+  trusted-keys-file: {{ file }}
+{% endfor %}
+
+remote-control:
+  control-enable: yes
+  control-interface: 0.0.0.0
+  control-port: 8953
+  control-use-cert: "no"
+{% for stub_zone in unbound_zones_stub %}
+
+stub-zone:
+{%   for key, value in stub_zone.items() %}
+{%     if value is not string and value is iterable %}
+{%       for i in value %}
+  {{ key }}: {{ i }}
+{%        endfor %}
+{%      else %}
+  {{ key }}: {{ value }}
+{%      endif %}
+{%    endfor %}
+{%  endfor %}
+{% for forward_zone in unbound_zones_forward %}
+
+forward-zone:
+{%   for key, value in forward_zone.items() %}
+{%     if value is not string and value is iterable %}
+{%       for i in value %}
+  {{ key }}: {{ i }}
+{%        endfor %}
+{%      else %}
+  {{ key }}: {{ value }}
+{%      endif %}
+{%    endfor %}
+{%  endfor %}
+{% for view in unbound_views %}
+
+view:
+{%   for i in view %}
+  {{ i }}
+{%    endfor %}
+{%  endfor %}
+
+{% for include in unbound_include_post %}
+include: conf.d/{{ include }}
+{%  endfor %}

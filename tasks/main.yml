@@ -1,0 +1,111 @@
+---
+- name: Ensure Unbound group is present
+  ansible.builtin.group:
+    name: "{{ unbound_group }}"
+    gid: "{{ unbound_gid }}"
+    state: present
+
+- name: Ensure Unbound user is present
+  ansible.builtin.user:
+    create_home: false
+    home: "{{ unbound_data_dir }}"
+    group: "{{ unbound_group }}"
+    name: "{{ unbound_user }}"
+    shell: /sbin/nologin
+    system: true
+    uid: "{{ unbound_uid }}"
+
+- name: Ensure directories for Unbound exist
+  ansible.builtin.file:
+    path: "{{ unbound_data_dir }}"
+    state: directory
+    owner: "{{ unbound_user }}"
+    group: "{{ unbound_group }}"
+    mode: "0644"
+  with_items:
+    - "{{ unbound_data_dir }}"
+    - "{{ unbound_data_dir }}/conf.d"
+
+- name: Pull Unbound docker image
+  community.docker.docker_image:
+    name: "{{ unbound_image }}"
+    source: pull
+    tag: "{{ unbound_version }}"
+  notify: Upgrade container
+
+- name: Ensure all handlers run before continuing
+  ansible.builtin.meta: flush_handlers
+
+- name: Ensure Unbound is configured
+  ansible.builtin.template:
+    src: unbound.conf.j2
+    dest: "{{ unbound_data_dir }}/unbound.conf"
+    owner: "{{ unbound_user }}"
+    group: "{{ unbound_group }}"
+    mode: "0644"
+  notify: Restart container
+
+- name: Ensure logging file is present
+  ansible.builtin.file:
+    access_time: preserve
+    group: "{{ unbound_group }}"
+    mode: "0644"
+    modification_time: preserve
+    owner: "{{ unbound_user }}"
+    path: "{{ unbound_data_dir }}/unbound.log"
+    state: touch
+
+- name: Ensure post configuration files are present
+  ansible.builtin.copy:
+    dest: "{{ unbound_data_dir }}/conf.d/"
+    group: "{{ unbound_group }}"
+    mode: "0644"
+    owner: "{{ unbound_user }}"
+    src: "{{ item }}"
+  with_items: "{{ unbound_include_post }}"
+  when: unbound_include_post | length > 0
+  notify: Restart container
+
+- name: Ensure pre configuration files are present
+  ansible.builtin.copy:
+    dest: "{{ unbound_data_dir }}/conf.d/"
+    group: "{{ unbound_group }}"
+    mode: "0644"
+    owner: "{{ unbound_user }}"
+    src: "{{ item }}"
+  with_items: "{{ unbound_include_pre }}"
+  when: unbound_include_pre | length > 0
+  notify: Restart container
+
+- name: Stop conflicting services that occupy needed DNS ports if needed
+  ansible.builtin.service:
+    name: "{{ item }}"
+    enabled: false
+    state: stopped
+  register: results
+  loop:
+    - systemd-resolved
+    - dnsmasq
+  failed_when: >-
+    results is failed and
+    "Could not find the requested service" not in results.msg | default('')
+  when: unbound_ports_expose
+
+- name: Ensure Unbound container is created
+  community.docker.docker_container:
+    container_default_behavior: no_defaults
+    detach: true
+    # env:
+    #   TZ: "{{ ansible_date_time.tz }}"
+    image: "{{ unbound_image }}:{{ unbound_version }}"
+    interactive: false
+    name: "{{ unbound_name }}"
+    ports: "{{ unbound_ports if unbound_ports_expose else '[]' }}"
+    pull: false
+    restart_policy: always
+    state: present
+    volumes:
+      - "/etc/localtime:/etc/localtime:ro"
+      - "/etc/ssl/pki/certs:/etc/ssl/pki::ro"
+      - "{{ unbound_data_dir }}:/opt/unbound/etc/unbound"
+  notify: Restart container
