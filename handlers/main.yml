@@ -1,10 +1,10 @@
 ---
-- name: Restart container
+- name: Restart Unbound
   command: "docker restart {{ item }}"
   with_items:
     - "{{ unbound_name }}"
 
-- name: Upgrade container
+- name: Remove Unbound
   command: "docker stop {{ item }} && docker rm {{ item }}"
   register: results
   with_items:

@@ -31,7 +31,7 @@
     name: "{{ unbound_image }}"
     source: pull
     tag: "{{ unbound_version }}"
-  notify: Upgrade container
+  notify: Remove Unbound
 
 - name: Ensure all handlers run before continuing
   ansible.builtin.meta: flush_handlers
@@ -43,7 +43,7 @@
     owner: "{{ unbound_user }}"
     group: "{{ unbound_group }}"
     mode: "0644"
-  notify: Restart container
+  notify: Restart Unbound
 
 - name: Ensure logging file is present
   ansible.builtin.file:
@@ -64,7 +64,7 @@
     src: "{{ item }}"
   with_items: "{{ unbound_include_post }}"
   when: unbound_include_post | length > 0
-  notify: Restart container
+  notify: Restart Unbound
 
 - name: Ensure pre configuration files are present
   ansible.builtin.copy:
@@ -75,7 +75,7 @@
     src: "{{ item }}"
   with_items: "{{ unbound_include_pre }}"
   when: unbound_include_pre | length > 0
-  notify: Restart container
+  notify: Restart Unbound
 
 - name: Stop conflicting services that occupy needed DNS ports if needed
   ansible.builtin.service:
@@ -106,4 +106,4 @@
       - "/etc/localtime:/etc/localtime:ro"
       - "/etc/ssl/pki/certs:/etc/ssl/pki::ro"
       - "{{ unbound_data_dir }}:/opt/unbound/etc/unbound"
-  notify: Restart container
+  notify: Restart Unbound
