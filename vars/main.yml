@@ -1,5 +1,5 @@
 ---
 unbound_ports:
-  - "53:53/udp"
-  - "53:53/tcp"
-  - "853:853/tcp"
+  - "{{ unbound_port }}:53/udp"
+  - "{{ unbound_port }}:53/tcp"
+  - "{{ unbound_port_tls }}:853/tcp"

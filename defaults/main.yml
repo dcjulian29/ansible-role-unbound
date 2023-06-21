@@ -37,9 +37,11 @@ unbound_local_datas: []
 unbound_local_data_ptrs: []
 unbound_local_zone_tags: []
 unbound_local_zone_overrides: []
-unbound_log_replies: true
+unbound_log_replies: false
 unbound_log_queries: true
 unbound_name: "unbound_{{ ansible_hostname }}"
+unbound_port: 53
+unbound_port_tls: 853
 unbound_ports_expose: true
 unbound_prefetch: false
 unbound_prefetch_key: true
