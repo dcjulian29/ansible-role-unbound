@@ -71,8 +71,8 @@ unbound_uid: 891
 unbound_use_caps_for_id: false
 unbound_user: unbound
 unbound_version: 1.17.1
-unbound_verbosity: 5    # 1
-unbound_verbosity_validator: 5    # 2
+unbound_verbosity: 1
+unbound_verbosity_validator: 2
 unbound_views: []
 unbound_zones_stub: []
 unbound_zones_forward:

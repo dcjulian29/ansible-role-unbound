@@ -95,8 +95,6 @@
   community.docker.docker_container:
     container_default_behavior: no_defaults
     detach: true
-    # env:
-    #   TZ: "{{ ansible_date_time.tz }}"
     image: "{{ unbound_image }}:{{ unbound_version }}"
     interactive: false
     name: "{{ unbound_name }}"
