@@ -28,6 +28,7 @@
 
 - name: Pull Unbound docker image
   community.docker.docker_image:
+    force_source: true
     name: "{{ unbound_image }}"
     source: pull
     tag: "{{ unbound_version }}"

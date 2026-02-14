@@ -1,4 +1,4 @@
-# {{ ansible_managed }}
+# {{ ansible_facts['managed'] }}
 
 {% for include in unbound_include_pre %}
 include: conf.d/{{ include }}
@@ -39,8 +39,8 @@ server:
   version: {{ unbound_version }}
   num-threads: {{ unbound_threads }}
   interface-automatic: "yes"
-  do-ip4: "{{ 'yes' if ansible_default_ipv4.address is defined else 'no' }}"
-  do-ip6: "{{ 'yes' if ansible_default_ipv6.address is defined else 'no' }}"
+  do-ip4: "{{ 'yes' if ansible_facts['default_ipv4'].address is defined else 'no' }}"
+  do-ip6: "{{ 'yes' if ansible_facts['default_ipv6'].address is defined else 'no' }}"
   do-udp: "yes"
   do-tcp: "yes"
   disable-dnssec-lame-check: "{{ 'yes' if unbound_disable_dnssec_lame_check else 'no' }}"
