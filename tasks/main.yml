@@ -105,6 +105,5 @@
     state: present
     volumes:
       - "/etc/localtime:/etc/localtime:ro"
-      - "/etc/ssl/pki/certs:/etc/ssl/pki::ro"
       - "{{ unbound_data_dir }}:/opt/unbound/etc/unbound"
   notify: Restart Unbound
