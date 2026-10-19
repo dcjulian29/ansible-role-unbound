@@ -1,4 +1,4 @@
-# {{ ansible_facts['managed'] }}
+# {{ ansible_managed }}
 
 {% for include in unbound_include_pre %}
 include: conf.d/{{ include }}
