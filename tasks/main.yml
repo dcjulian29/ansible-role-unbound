@@ -46,13 +46,15 @@
     mode: "0644"
   notify: Restart Unbound
 
+# No owner or group: the image's /unbound.sh chowns this file to its own
+# _unbound user (uid 1000) at every container start, so setting one here
+# would change it back and report a change after every restart. The file
+# must still exist, because that chown is chained with && and fails without it.
 - name: Ensure logging file is present
   ansible.builtin.file:
     access_time: preserve
-    group: "{{ unbound_group }}"
     mode: "0644"
     modification_time: preserve
-    owner: "{{ unbound_user }}"
     path: "{{ unbound_data_dir }}/unbound.log"
     state: touch
 
@@ -102,7 +104,7 @@
     ports: "{{ unbound_ports if unbound_ports_expose else '[]' }}"
     pull: false
     restart_policy: always
-    state: present
+    state: started
     volumes:
       - "/etc/localtime:/etc/localtime:ro"
       - "{{ unbound_data_dir }}:/opt/unbound/etc/unbound"
